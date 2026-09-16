@@ -14,6 +14,11 @@ export const getStoredValue = (key, fallback = null) => {
 
 export const setStoredValue = (key, value) => {
 	localStorage.setItem(key, JSON.stringify(value));
+	window.dispatchEvent(
+		new CustomEvent('store-update', {
+			detail: { key, value },
+		}),
+	);
 };
 
 export const removeStoredValue = (key) => {
