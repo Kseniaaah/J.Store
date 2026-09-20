@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { mockBanners as slides } from '../../../../data/mock-banners';
+
+const getBannerUrl = (target) =>
+	target?.type === 'collection'
+		? `/jewelery?collection=${target.id}`
+		: `/jewelery?category=${target?.id || 'all'}`;
 
 const HeroBannerContainer = ({ className }) => {
 	const [activeSlide, setActiveSlide] = useState(0);
@@ -14,12 +20,14 @@ const HeroBannerContainer = ({ className }) => {
 
 	return (
 		<section className={className}>
-			<img
-				className="hero-banner__image"
-				src={currentSlide.image}
-				alt={currentSlide.alt}
-			/>
-			<h1 className="hero-banner__title">{currentSlide.title}</h1>
+			<Link className="hero-banner__link" to={getBannerUrl(currentSlide.target)}>
+				<img
+					className="hero-banner__image"
+					src={currentSlide.image}
+					alt={currentSlide.alt}
+				/>
+				<h1 className="hero-banner__title">{currentSlide.title}</h1>
+			</Link>
 
 			<button
 				className="hero-banner__arrow hero-banner__arrow--previous"
@@ -68,6 +76,14 @@ export const HeroBanner = styled(HeroBannerContainer)`
 		object-fit: cover;
 	}
 
+	.hero-banner__link {
+		display: block;
+		width: 100%;
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+	}
+
 	.hero-banner__title {
 		position: absolute;
 		top: 32px;
@@ -112,6 +128,7 @@ export const HeroBanner = styled(HeroBannerContainer)`
 
 	.hero-banner__dots {
 		position: absolute;
+		z-index: 2;
 		bottom: 20px;
 		left: 50%;
 		display: flex;

@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { BackBanner, Bestsellers, HeroBanner } from './components';
 
-const HomeContainer = ({ className }) => {
+const HomeContainer = ({ className, products }) => {
 	return (
 		<div className={className}>
 			<HeroBanner />
-			<Bestsellers />
+			<Bestsellers products={products} />
 			<BackBanner />
 		</div>
 	);

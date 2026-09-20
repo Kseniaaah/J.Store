@@ -1,16 +1,24 @@
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
+import { categories } from '../../../../data/mock-products';
 
 const ModeratorBannerEditContainer = ({
 	className,
 	banners,
 	setBanners,
+	collections = [],
 	isAdding = false,
 }) => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const banner = isAdding
-		? { title: '', alt: '', image: '', status: 'draft' }
+		? {
+				title: '',
+				alt: '',
+				image: '',
+				target: { type: 'category', id: 'all' },
+				status: 'draft',
+			}
 		: banners.find((item) => item.id === Number(id));
 
 	if (!banner) {
@@ -20,10 +28,16 @@ const ModeratorBannerEditContainer = ({
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
+		const targetValue = formData.get('target')?.toString() || 'category:all';
+		const [targetType, targetId] = targetValue.split(':');
 		const nextBanner = {
 			title: formData.get('title')?.toString().trim() || 'Новый баннер',
 			alt: formData.get('alt')?.toString().trim() || 'Баннер магазина',
 			image: formData.get('imageUrl')?.toString().trim(),
+			target: {
+				type: targetType,
+				id: targetType === 'collection' ? Number(targetId) : targetId,
+			},
 			status: formData.get('status')?.toString() || 'draft',
 		};
 
@@ -50,7 +64,7 @@ const ModeratorBannerEditContainer = ({
 			<div className="page-shell">
 				<header className="page-header">
 					<div>
-						<span className="eyebrow">J.Store · moderator</span>
+						<span className="eyebrow">your jeweler · moderator</span>
 						<h1>{isAdding ? 'Добавить баннер' : 'Редактировать баннер'}</h1>
 						<p>
 							{isAdding
@@ -114,6 +128,36 @@ const ModeratorBannerEditContainer = ({
 								type="url"
 								defaultValue={banner.image}
 							/>
+						</label>
+
+						<label>
+							<span>Ссылка баннера</span>
+							<select
+								name="target"
+								defaultValue={`${banner.target?.type || 'category'}:${banner.target?.id || 'all'}`}
+							>
+								<option value="category:all">Все украшения</option>
+								<optgroup label="Категории">
+									{categories.map((category) => (
+										<option
+											key={category.id}
+											value={`category:${category.id}`}
+										>
+											{category.title}
+										</option>
+									))}
+								</optgroup>
+								<optgroup label="Коллекции">
+									{collections.map((collection) => (
+										<option
+											key={collection.id}
+											value={`collection:${collection.id}`}
+										>
+											{collection.title}
+										</option>
+									))}
+								</optgroup>
+							</select>
 						</label>
 
 						<label>

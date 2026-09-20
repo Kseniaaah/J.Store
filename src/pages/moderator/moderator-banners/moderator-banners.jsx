@@ -16,7 +16,7 @@ const ModeratorBannersContainer = ({ className, banners }) => {
 		<main className={className}>
 			<header className="page-header">
 				<div>
-					<span className="eyebrow">J.Store · moderator</span>
+					<span className="eyebrow">your jeweler · moderator</span>
 					<h1>Баннеры</h1>
 					<p>
 						Главные промо-блоки и изображения, которые видят посетители

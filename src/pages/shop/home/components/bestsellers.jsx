@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import { mockProducts as products } from '../../../../data/mock-products';
+import { ProductLink } from '../../../../components/product-link/product-link';
 import heartIcon from '../../../../components/icon/heartHeader.png';
 import { PagesTitle } from '../../../../components';
 
-const BestsellersContainer = ({ className }) => {
+const BestsellersContainer = ({ className, products }) => {
 	const bestsellers = products.filter((product) => product.bestseller);
 
 	return (
@@ -13,19 +13,24 @@ const BestsellersContainer = ({ className }) => {
 				{bestsellers.map((product) => (
 					<ProductCard key={product.id}>
 						<ImageWrapper>
-							<ImageTrack>
-								{product.images.slice(0, 2).map((image, imageIndex) => (
-									<ProductImage
-										key={image}
-										src={image}
-										alt={
-											imageIndex === 0
-												? product.title
-												: `${product.title}, фото ${imageIndex + 1}`
-										}
-									/>
-								))}
-							</ImageTrack>
+							<ProductLink to={`/products/${product.id}`} $image>
+								<ImageTrack>
+									{[
+										product.images[0],
+										product.images[1] || product.images[0],
+									].map((image, imageIndex) => (
+										<ProductImage
+											key={`${image}-${imageIndex}`}
+											src={image}
+											alt={
+												imageIndex === 0
+													? product.title
+													: `${product.title}, фото ${imageIndex + 1}`
+											}
+										/>
+									))}
+								</ImageTrack>
+							</ProductLink>
 							<FavoriteButton
 								type="button"
 								aria-label={`Добавить ${product.title} в избранное`}
@@ -37,7 +42,11 @@ const BestsellersContainer = ({ className }) => {
 								<ImageIndicator />
 							</ImageIndicators>
 						</ImageWrapper>
-						<ProductTitle>{product.title}</ProductTitle>
+						<ProductTitle>
+							<ProductLink to={`/products/${product.id}`}>
+								{product.title}
+							</ProductLink>
+						</ProductTitle>
 						<ProductPrice>{product.price.toLocaleString('ru-RU')} ₽</ProductPrice>
 					</ProductCard>
 				))}
@@ -58,6 +67,7 @@ const ImageTrack = styled.div`
 `;
 
 const ImageIndicators = styled.div`
+	pointer-events: none;
 	position: absolute;
 	bottom: 12px;
 	left: 50%;

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { mockProducts as products } from '../../../data/mock-products';
+import { ProductLink } from '../../../components/product-link/product-link';
 import { mockWishlist } from '../../../data/mock-wishlist';
 import deleteIcon from '../../../components/icon/delete.png';
 import cartIcon from '../../../components/icon/bag.png';
 import { PagesTitle } from '../../../components';
 import { getStoredValue, setStoredValue } from '../../../utils/local-storage';
 
-const FavouritesContainer = ({ className }) => {
+const FavouritesContainer = ({ className, products }) => {
 	const [wishlistProductIds, setWishlistProductIds] = useState(() =>
 		getStoredValue('wishlist', mockWishlist),
 	);
@@ -49,19 +49,24 @@ const FavouritesContainer = ({ className }) => {
 				favouriteProducts.map((product) => (
 					<ProductCard key={product.id}>
 						<ImageWrapper>
-							<ImageTrack>
-								{product.images.slice(0, 2).map((image, imageIndex) => (
-									<ProductImage
-										key={image}
-										src={image}
-										alt={
-											imageIndex === 0
-												? product.title
-												: `${product.title}, фото ${imageIndex + 1}`
-										}
-									/>
-								))}
-							</ImageTrack>
+							<ProductLink to={`/products/${product.id}`} $image>
+								<ImageTrack>
+									{[
+										product.images[0],
+										product.images[1] || product.images[0],
+									].map((image, imageIndex) => (
+										<ProductImage
+											key={`${image}-${imageIndex}`}
+											src={image}
+											alt={
+												imageIndex === 0
+													? product.title
+													: `${product.title}, фото ${imageIndex + 1}`
+											}
+										/>
+									))}
+								</ImageTrack>
+							</ProductLink>
 							<DeleteButton
 								type="button"
 								aria-label={`Убрать ${product.title} из избранного`}
@@ -91,7 +96,11 @@ const FavouritesContainer = ({ className }) => {
 								<ImageIndicator />
 							</ImageIndicators>
 						</ImageWrapper>
-						<ProductTitle>{product.title}</ProductTitle>
+						<ProductTitle>
+							<ProductLink to={`/products/${product.id}`}>
+								{product.title}
+							</ProductLink>
+						</ProductTitle>
 						<ProductPrice>
 							{product.price.toLocaleString('ru-RU')} ₽
 						</ProductPrice>
@@ -160,6 +169,7 @@ const ProductImage = styled.img`
 `;
 
 const ImageIndicators = styled.div`
+	pointer-events: none;
 	position: absolute;
 	bottom: 12px;
 	left: 50%;

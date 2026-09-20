@@ -22,4 +22,19 @@ export const Header = styled(HeaderContainer)`
 	@media (max-width: 900px) {
 		padding: 0 20px;
 	}
+
+	@media (max-width: 760px) {
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 8px 12px;
+		padding: 12px 16px 0;
+
+		> nav {
+			grid-column: 1 / -1;
+			grid-row: 2;
+			justify-content: center;
+			flex-wrap: wrap;
+			width: 100%;
+			padding-bottom: 8px;
+		}
+	}
 `;

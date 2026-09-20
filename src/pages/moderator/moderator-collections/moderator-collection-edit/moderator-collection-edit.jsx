@@ -48,7 +48,7 @@ const ModeratorCollectionEditContainer = ({
 			<div className="page-shell">
 				<header className="page-header">
 					<div>
-						<span className="eyebrow">J.Store · moderator</span>
+						<span className="eyebrow">your jeweler · moderator</span>
 						<h1>
 							{isAdding ? 'Добавить коллекцию' : 'Редактировать коллекцию'}
 						</h1>

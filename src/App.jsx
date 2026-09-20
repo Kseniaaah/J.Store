@@ -1,14 +1,15 @@
 ﻿import { useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { Footer, Header } from './components';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Footer, Header, ModeratorHeader } from './components';
 import { mockProducts } from './data/mock-products';
 import { mockBanners } from './data/mock-banners';
 import { mockCollections } from './data/mock-collections';
-import { latestOrders } from './data/mock-moderator-dashboard';
+import { mockOrders } from './data/mock-moderator-dashboard';
 import {
 	Home,
 	About,
 	Jewelery,
+	Product,
 	Collections,
 	DeliveryAndPayments,
 	Favourites,
@@ -28,6 +29,22 @@ import {
 	ModeratorOrder,
 } from './pages';
 import styled from 'styled-components';
+import { isModeratorAuthenticated, logoutModerator } from './utils/moderator-auth';
+
+const RequireModeratorAuth = ({ children }) => {
+	const location = useLocation();
+
+	if (!isModeratorAuthenticated()) {
+		return (
+			<Navigate
+				to={`/moderator/login?from=${encodeURIComponent(location.pathname)}`}
+				replace
+			/>
+		);
+	}
+
+	return children;
+};
 
 const AppColumn = styled.div`
 	display: flex;
@@ -47,45 +64,39 @@ const Content = styled.div`
 `;
 
 export const App = () => {
-	/*function RequireAuth({ children }) {
-		const isAuthenticated = useSelector(selectIsAuthenticated);
-
-		if (!isAuthenticated) {
-			return <Navigate to="/" replace />;
-		}
-
-		return children;
-	}*/
+	const location = useLocation();
+	const isModeratorRoute = location.pathname.startsWith('/moderator');
+	const isModeratorLogin = location.pathname === '/moderator/login';
 
 	const [products, setProducts] = useState(mockProducts);
-	const [banners, setBanners] = useState(() =>
-		mockBanners.map((banner) => ({ ...banner, status: 'published' })),
-	);
-	const [collections, setCollections] = useState(() =>
-		mockCollections.map((collection) => ({ ...collection, status: 'published' })),
-	);
-	const [orders, setOrders] = useState(() =>
-		latestOrders.map((order) => ({
-			...order,
-			date: '15 сентября 2026, 12:40',
-			phone: '+7 (900) 123-45-67',
-			address: 'Москва, ул. Петровка, 18',
-			comment: '',
-			internalComment: '',
-		})),
-	);
+	const [banners, setBanners] = useState(mockBanners);
+	const [collections, setCollections] = useState(mockCollections);
+	const [orders, setOrders] = useState(mockOrders);
 
 	return (
 		<AppColumn>
-			<Header />
+			{isModeratorRoute ? (
+				!isModeratorLogin && <ModeratorHeader onLogout={logoutModerator} />
+			) : (
+				<Header />
+			)}
 			<Content>
 				<Routes>
-					<Route path="/" element={<Home />} />
+					<Route path="/" element={<Home products={products} />} />
 					<Route path="/about" element={<About />} />
-					<Route path="/jewelery" element={<Jewelery />} />
+					<Route path="/jewelery" element={<Jewelery products={products} />} />
+					<Route
+						path="/products/:id"
+						element={
+							<Product products={products} collections={collections} />
+						}
+					/>
 					<Route path="/collections" element={<Collections />} />
-					<Route path="/favourites" element={<Favourites />} />
-					<Route path="/cart" element={<Cart />} />
+					<Route
+						path="/favourites"
+						element={<Favourites products={products} />}
+					/>
+					<Route path="/cart" element={<Cart products={products} />} />
 					<Route
 						path="/deliveryAndPayments"
 						element={<DeliveryAndPayments />}
@@ -93,77 +104,124 @@ export const App = () => {
 					<Route path="/moderator/login" element={<ModeratorLogin />} />
 					<Route
 						path="/moderator/dashboard"
-						element={<ModeratorDashboard orders={orders} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorDashboard
+									orders={orders}
+									products={products}
+									collections={collections}
+									banners={banners}
+								/>
+							</RequireModeratorAuth>
+						}
 					/>
 					<Route
 						path="/moderator/products"
 						element={
-							<ModeratorProducts
-								products={products}
-								setProducts={setProducts}
-							/>
+							<RequireModeratorAuth>
+								<ModeratorProducts
+									products={products}
+									setProducts={setProducts}
+								/>
+							</RequireModeratorAuth>
 						}
 					/>
 					<Route
 						path="/moderator/products/add"
-						element={<ModeratorProductAdd setProducts={setProducts} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorProductAdd setProducts={setProducts} />
+							</RequireModeratorAuth>
+						}
 					/>
 					<Route
 						path="/moderator/products/:id/edit"
 						element={
-							<ModeratorProductEdit
-								products={products}
-								setProducts={setProducts}
-							/>
+							<RequireModeratorAuth>
+								<ModeratorProductEdit
+									products={products}
+									setProducts={setProducts}
+								/>
+							</RequireModeratorAuth>
 						}
 					/>
 					<Route
 						path="/moderator/banners"
-						element={<ModeratorBanners banners={banners} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorBanners banners={banners} />
+							</RequireModeratorAuth>
+						}
 					/>
 					<Route
 						path="/moderator/banners/:id/edit"
 						element={
-							<ModeratorBannerEdit
-								banners={banners}
-								setBanners={setBanners}
-							/>
+							<RequireModeratorAuth>
+								<ModeratorBannerEdit
+									banners={banners}
+									setBanners={setBanners}
+									collections={collections}
+								/>
+							</RequireModeratorAuth>
 						}
 					/>
 					<Route
 						path="/moderator/banners/add"
-						element={<ModeratorBannerAdd setBanners={setBanners} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorBannerAdd
+									setBanners={setBanners}
+									collections={collections}
+								/>
+							</RequireModeratorAuth>
+						}
 					/>
 					<Route
 						path="/moderator/collections"
-						element={<ModeratorCollections collections={collections} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorCollections collections={collections} />
+							</RequireModeratorAuth>
+						}
 					/>
 					<Route
 						path="/moderator/collections/:id/edit"
 						element={
-							<ModeratorCollectionEdit
-								collections={collections}
-								setCollections={setCollections}
-							/>
+							<RequireModeratorAuth>
+								<ModeratorCollectionEdit
+									collections={collections}
+									setCollections={setCollections}
+								/>
+							</RequireModeratorAuth>
 						}
 					/>
 					<Route
 						path="/moderator/collections/add"
 						element={
-							<ModeratorCollectionAdd setCollections={setCollections} />
+							<RequireModeratorAuth>
+								<ModeratorCollectionAdd setCollections={setCollections} />
+							</RequireModeratorAuth>
 						}
 					/>
 					<Route
 						path="/moderator/orders"
-						element={<ModeratorOrders orders={orders} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorOrders orders={orders} />
+							</RequireModeratorAuth>
+						}
 					/>
 					<Route
 						path="/moderator/orders/:id"
-						element={<ModeratorOrder orders={orders} setOrders={setOrders} />}
+						element={
+							<RequireModeratorAuth>
+								<ModeratorOrder orders={orders} setOrders={setOrders} />
+							</RequireModeratorAuth>
+						}
 					/>
 				</Routes>
 			</Content>
-			<Footer />
+			{!isModeratorRoute && <Footer />}
 		</AppColumn>
 	);
 };

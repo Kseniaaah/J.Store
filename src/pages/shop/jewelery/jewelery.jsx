@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { mockProducts as products } from '../../../data/mock-products';
+import { ProductLink } from '../../../components/product-link/product-link';
 import { mockCollections } from '../../../data/mock-collections';
 import { mockWishlist } from '../../../data/mock-wishlist';
 import heartIcon from '../../../components/icon/heartHeader.png';
@@ -11,7 +12,7 @@ import { getStoredValue, setStoredValue } from '../../../utils/local-storage';
 const categoryFilters = [
 	{ id: 'all', title: 'Все украшения' },
 	{ id: 'rings', title: 'Кольца' },
-	{ id: 'pendants', title: 'Подвески' },
+	{ id: 'necklaces', title: 'Ожерелья' },
 	{ id: 'earrings', title: 'Серьги' },
 	{ id: 'bracelets', title: 'Браслеты' },
 	{ id: 'wedding', title: 'Свадебные' },
@@ -31,12 +32,14 @@ const sortOptions = [
 ];
 
 const getProductMaterial = (product) => {
-	const productText = `${product.title} ${product.description}`.toLowerCase();
-
-	return productText.includes('серебр') ? 'silver' : 'gold';
+	const material = (product.material || '').toLowerCase();
+	if (material.includes('серебр')) return 'silver';
+	if (material.includes('золот')) return 'gold';
+	return null;
 };
 
-const JeweleryContainer = ({ className }) => {
+const JeweleryContainer = ({ className, products }) => {
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [wishlistProductIds, setWishlistProductIds] = useState(() =>
 		getStoredValue('wishlist', mockWishlist),
 	);
@@ -45,26 +48,49 @@ const JeweleryContainer = ({ className }) => {
 	);
 	const [activeCategory, setActiveCategory] = useState('all');
 	const [activeMaterial, setActiveMaterial] = useState('all');
-	const [activeCollection, setActiveCollection] = useState('all');
 	const [sortOrder, setSortOrder] = useState('default');
+	const requestedCollection = searchParams.get('collection');
+	const activeCollection = mockCollections.some(
+		(collection) => String(collection.id) === requestedCollection,
+	)
+		? requestedCollection
+		: 'all';
+
+	const selectCollection = (collectionId) => {
+		setSearchParams((currentParams) => {
+			const nextParams = new URLSearchParams(currentParams);
+			if (collectionId === 'all') {
+				nextParams.delete('collection');
+			} else {
+				nextParams.set('collection', collectionId);
+			}
+			return nextParams;
+		});
+	};
 
 	const filteredProducts = products
 		.filter((product) => {
 			const matchesCategory =
 				activeCategory === 'all' ||
-				(activeCategory === 'pendants'
-					? product.category === 'necklaces'
-					: activeCategory === 'bestsellers'
+				(activeCategory === 'bestsellers'
 						? product.bestseller
 						: product.category === activeCategory);
 			const matchesMaterial =
 				activeMaterial === 'all' ||
 				getProductMaterial(product) === activeMaterial;
+			const requestedCategory = searchParams.get('category');
+			const matchesRequestedCategory =
+				!requestedCategory || requestedCategory === product.category;
 			const matchesCollection =
 				activeCollection === 'all' ||
 				product.collectionId === Number(activeCollection);
 
-			return matchesCategory && matchesMaterial && matchesCollection;
+			return (
+				matchesCategory &&
+				matchesMaterial &&
+				matchesRequestedCategory &&
+				matchesCollection
+			);
 		})
 		.sort((firstProduct, secondProduct) => {
 			if (sortOrder === 'priceAscending')
@@ -138,7 +164,7 @@ const JeweleryContainer = ({ className }) => {
 								id="collection-filter"
 								value={activeCollection}
 								onChange={(event) =>
-									setActiveCollection(event.target.value)
+									selectCollection(event.target.value)
 								}
 							>
 								<option value="all">Все коллекции</option>
@@ -178,19 +204,24 @@ const JeweleryContainer = ({ className }) => {
 				filteredProducts.map((product) => (
 					<JewelryCard key={product.id}>
 						<ImageWrapper>
-							<ImageTrack>
-								{product.images.slice(0, 2).map((image, imageIndex) => (
-									<ProductImage
-										key={image}
-										src={image}
-										alt={
-											imageIndex === 0
-												? product.title
-												: `${product.title}, фото ${imageIndex + 1}`
-										}
-									/>
-								))}
-							</ImageTrack>
+							<ProductLink to={`/products/${product.id}`} $image>
+								<ImageTrack>
+									{[
+										product.images[0],
+										product.images[1] || product.images[0],
+									].map((image, imageIndex) => (
+										<ProductImage
+											key={`${image}-${imageIndex}`}
+											src={image}
+											alt={
+												imageIndex === 0
+													? product.title
+													: `${product.title}, фото ${imageIndex + 1}`
+											}
+										/>
+									))}
+								</ImageTrack>
+							</ProductLink>
 							<FavoriteButton
 								type="button"
 								$active={wishlistProductIds.includes(product.id)}
@@ -230,7 +261,11 @@ const JeweleryContainer = ({ className }) => {
 								<ImageIndicator />
 							</ImageIndicators>
 						</ImageWrapper>
-						<ProductTitle>{product.title}</ProductTitle>
+						<ProductTitle>
+							<ProductLink to={`/products/${product.id}`}>
+								{product.title}
+							</ProductLink>
+						</ProductTitle>
 						<ProductPrice>
 							{product.price.toLocaleString('ru-RU')} ₽
 						</ProductPrice>
@@ -390,6 +425,7 @@ const ImageTrack = styled.div`
 `;
 
 const ImageIndicators = styled.div`
+	pointer-events: none;
 	position: absolute;
 	bottom: 12px;
 	left: 50%;

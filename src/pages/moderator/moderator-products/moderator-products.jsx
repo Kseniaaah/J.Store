@@ -11,13 +11,15 @@ const ModeratorProductsContainer = ({ className, products, setProducts }) => {
 	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 	const currentProducts = useMemo(
 		() => products.slice(startIndex, startIndex + ITEMS_PER_PAGE),
-		[products, startIndex]
+		[products, startIndex],
 	);
 
 	const handlePrev = () => setCurrentPage((page) => Math.max(1, page - 1));
 	const handleNext = () => setCurrentPage((page) => Math.min(totalPages, page + 1));
 	const handleDelete = (productId) => {
-		setProducts((currentProducts) => currentProducts.filter(({ id }) => id !== productId));
+		setProducts((currentProducts) =>
+			currentProducts.filter(({ id }) => id !== productId),
+		);
 	};
 
 	useEffect(() => {
@@ -28,10 +30,12 @@ const ModeratorProductsContainer = ({ className, products, setProducts }) => {
 		<main className={className}>
 			<header className="page-header">
 				<div>
-					<span className="eyebrow">J.Store · moderator</span>
+					<span className="eyebrow">your jeweler · moderator</span>
 					<h1>Товары</h1>
 				</div>
-				<Link to="/moderator/products/add" className="primary-button">Добавить новый</Link>
+				<Link to="/moderator/products/add" className="primary-button">
+					Добавить новый
+				</Link>
 			</header>
 
 			<section className="table-panel" aria-label="Список товаров">
@@ -54,12 +58,23 @@ const ModeratorProductsContainer = ({ className, products, setProducts }) => {
 
 						<span className="price-cell">{formatPrice(product.price)}</span>
 
-						<span className={`status ${product.bestseller ? 'status--featured' : 'status--regular'}`}>
-							{product.bestseller ? 'Лучший' : 'Обычный'}
+						<span
+							className={`status ${product.stock === 0 ? 'status--out' : product.bestseller ? 'status--featured' : 'status--regular'}`}
+						>
+							{product.stock === 0
+								? 'Нет в наличии'
+								: product.bestseller
+									? 'Лучший'
+									: 'Обычный'}
 						</span>
 
 						<div className="actions-cell">
-							<Link to={`/moderator/products/${product.id}/edit`} className="edit-button">Редактировать</Link>
+							<Link
+								to={`/moderator/products/${product.id}/edit`}
+								className="edit-button"
+							>
+								Редактировать
+							</Link>
 							<button
 								type="button"
 								className="delete-button"
@@ -79,7 +94,11 @@ const ModeratorProductsContainer = ({ className, products, setProducts }) => {
 				<span>
 					{currentPage} / {totalPages}
 				</span>
-				<button type="button" onClick={handleNext} disabled={currentPage === totalPages}>
+				<button
+					type="button"
+					onClick={handleNext}
+					disabled={currentPage === totalPages}
+				>
 					Вперёд
 				</button>
 			</div>
@@ -137,7 +156,9 @@ export const ModeratorProducts = styled(ModeratorProductsContainer)`
 		color: #fff;
 		font-size: 14px;
 		text-decoration: none;
-		transition: transform 0.2s ease, opacity 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease;
 	}
 
 	.primary-button:hover {
@@ -246,7 +267,10 @@ export const ModeratorProducts = styled(ModeratorProductsContainer)`
 		padding: 0 12px;
 		font-size: 12px;
 		text-decoration: none;
-		transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease,
+			background 0.2s ease;
 	}
 
 	.edit-button {

@@ -1,86 +1,127 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { dashboardStats } from '../../../data/mock-moderator-dashboard';
+import {
+	dashboardDate,
+	dashboardDateTime,
+	orderStatusLabels,
+} from '../../../data/mock-moderator-dashboard';
 
-const quickActions = [
-	{ label: 'Товары', to: '/moderator/products', detail: 'Каталог' },
-	{ label: 'Баннеры', to: '/moderator/banners', detail: 'Главная' },
-	{ label: 'Коллекции', to: '/moderator/collections', detail: 'Разделы' },
-	{ label: 'Заказы', to: '/moderator/orders', detail: 'Статусы' },
-];
+const formatPrice = (value) => `${value.toLocaleString('ru-RU')} ₽`;
+const formatItems = (items) =>
+	items
+		.map(({ title, quantity }) => (quantity > 1 ? `${title} ×${quantity}` : title))
+		.join(' · ');
 
-const ModeratorDashboardContainer = ({ className, orders }) => (
-	<main className={className}>
-		<header className="dashboard-header">
-			<div>
-				<span className="eyebrow">J.Store · moderator</span>
-				<h1>Панель управления</h1>
-			</div>
-			<time dateTime="2026-09-15">15 сентября 2026</time>
-		</header>
+const ModeratorDashboardContainer = ({
+	className,
+	orders,
+	products,
+	collections,
+	banners,
+}) => {
+	const sections = [
+		{
+			title: 'Новые заказы',
+			to: '/moderator/orders',
+			value: orders.filter((order) => order.status === 'new').length,
+			caption: 'Требуют внимания',
+			detail: `Всего заказов: ${orders.length}`,
+		},
+		{
+			title: 'Каталог',
+			to: '/moderator/products',
+			value: products.length,
+			caption: 'Позиций в каталоге',
+			detail: `Бестселлеров: ${products.filter((product) => product.bestseller).length}`,
+		},
+		{
+			title: 'Подборки',
+			to: '/moderator/collections',
+			value: collections.length,
+			caption: 'Коллекции украшений',
+			detail: `Опубликовано: ${collections.filter((collection) => collection.status === 'published').length}`,
+		},
+		{
+			title: 'Промо',
+			to: '/moderator/banners',
+			value: banners.length,
+			caption: 'Баннеры на главной',
+			detail: `Опубликовано: ${banners.filter((banner) => banner.status === 'published').length}`,
+		},
+	];
 
-		<section className="stats" aria-label="Общие показатели">
-			{dashboardStats.map((stat) => (
-				<article className={`stat-card stat-card--${stat.tone}`} key={stat.label}>
-					<span>{stat.label}</span>
-					<strong>{stat.value}</strong>
-				</article>
-			))}
-		</section>
-
-		<section className="actions-section" aria-labelledby="quick-actions-title">
-			<div className="section-heading">
+	return (
+		<main className={className}>
+			<header className="dashboard-header">
 				<div>
-					<span className="eyebrow">Управление</span>
-					<h2 id="quick-actions-title">Быстрые действия</h2>
+					<span className="eyebrow">your jeweler · moderator</span>
+					<h1>Панель управления</h1>
 				</div>
-			</div>
-			<div className="actions-grid">
-				{quickActions.map((action) => (
-					<Link key={action.to} to={action.to} className="action-card">
-						<span className="action-kicker">Раздел</span>
-						<strong>{action.label}</strong>
-						<small>{action.detail}</small>
+				<time dateTime={dashboardDateTime}>{dashboardDate}</time>
+			</header>
+
+			<section
+				className="overview-grid"
+				aria-label="Показатели и управление разделами"
+			>
+				{sections.map((section) => (
+					<Link key={section.to} to={section.to} className="overview-card">
+						<span className="card-arrow" aria-hidden="true">
+							↗
+						</span>
+						<div className="card-summary">
+							<strong className="card-value">
+								{section.value.toLocaleString('ru-RU')}
+							</strong>
+							<div className="card-heading">
+								<h2>{section.title}</h2>
+								<span>{section.caption}</span>
+							</div>
+						</div>
+						<span className="card-detail">{section.detail}</span>
 					</Link>
 				))}
-			</div>
-		</section>
+			</section>
 
-		<section className="orders-section" aria-labelledby="latest-orders-title">
-			<div className="section-heading">
-				<div>
-					<span className="eyebrow">Обзор</span>
-					<h2 id="latest-orders-title">Последние заказы</h2>
-				</div>
-				<Link to="/moderator/orders">
-					Все заказы <span aria-hidden="true">→</span>
-				</Link>
-			</div>
-			<div className="orders-table" role="table" aria-label="Последние заказы">
-				<div className="table-row table-head" role="row">
-					<span>Заказ</span>
-					<span>Клиент</span>
-					<span>Состав</span>
-					<span>Сумма</span>
-					<span>Статус</span>
-				</div>
-				{orders.map((order) => (
-					<div className="table-row" role="row" key={order.id}>
-						<Link to={`/moderator/orders/${order.id.replace('#', '')}`}>
-							<strong>{order.id}</strong>
-						</Link>
-						<span>{order.customer}</span>
-						<span className="muted">{order.items}</span>
-						<strong>{order.total}</strong>
-						<span className={`status status--${order.statusTone}`}>
-							{order.status}
-						</span>
+			<section className="orders-section" aria-labelledby="latest-orders-title">
+				<div className="section-heading">
+					<div>
+						<span className="eyebrow">Обзор</span>
+						<h2 id="latest-orders-title">Последние заказы</h2>
 					</div>
-				))}
-			</div>
-		</section>
-	</main>
-);
+					<Link to="/moderator/orders">
+						Все заказы <span aria-hidden="true">→</span>
+					</Link>
+				</div>
+				<div className="orders-table" role="table" aria-label="Последние заказы">
+					<div className="table-row table-head" role="row">
+						<span>Заказ</span>
+						<span>Клиент</span>
+						<span>Состав</span>
+						<span>Сумма</span>
+						<span>Статус</span>
+					</div>
+					{orders.map((order) => (
+						<Link
+							key={order.id}
+							to={`/moderator/orders/${order.id}`}
+							className="table-row order-row"
+							role="row"
+						>
+							<strong>#{order.id}</strong>
+							<span>{order.customer}</span>
+							<span className="muted">{formatItems(order.items)}</span>
+							<strong>{formatPrice(order.total)}</strong>
+							<span className={`status status--${order.status}`}>
+								{orderStatusLabels[order.status]}
+							</span>
+						</Link>
+					))}
+				</div>
+			</section>
+		</main>
+	);
+};
 
 export const ModeratorDashboard = styled(ModeratorDashboardContainer)`
 	width: min(100% - 80px, 1440px);
@@ -121,112 +162,100 @@ export const ModeratorDashboard = styled(ModeratorDashboardContainer)`
 		font-size: 13px;
 	}
 
-	.stats {
+	.overview-grid {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 12px;
-		margin: 28px 0 56px;
+		gap: 16px;
+		margin: 28px 0 48px;
 	}
 
-	.stat-card {
-		min-height: 120px;
-		padding: 18px 18px 16px;
-		border: 1px solid #e0d8cf;
-		background: #fff;
-	}
-	.stat-card span {
-		display: block;
-		max-width: 150px;
-		color: #665d55;
-		font-size: 12px;
-		line-height: 1.4;
-	}
-	.stat-card strong {
-		display: block;
-		margin-top: 18px;
-		font-size: 34px;
-		font-weight: 500;
-		line-height: 1;
-	}
-	.stat-card--dark {
-		background: #f5efe9;
-		color: #302c28;
-		border-color: #d8cec2;
-	}
-	.stat-card--dark span {
-		color: #665d55;
-	}
-	.stat-card--warm {
-		background: #f3eee8;
-	}
-	.stat-card--sage {
-		background: #f1eee7;
-	}
-	.stat-card--rose {
-		background: #f7f1ee;
-	}
-
-	.actions-section {
-		margin-bottom: 56px;
-	}
-
-	.actions-grid {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 12px;
-	}
-
-	.action-card {
+	.overview-card {
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		min-height: 110px;
-		padding: 14px 16px;
+		min-width: 0;
+		padding: 22px;
 		text-decoration: none;
 		color: #302c28;
-		background: #f8f3ee;
-		border: 1px solid #d8cec2;
+		background: #f2ece2;
+		border: 1px solid #e5dccc;
+		border-radius: 12px;
 		transition:
 			background 0.2s ease,
 			border-color 0.2s ease,
 			transform 0.2s ease;
 	}
 
-	.action-card:hover {
-		background: #f1e8df;
-		border-color: #cabcae;
-		transform: translateY(-1px);
+	.overview-card:hover {
+		background: #ece3d5;
+		border-color: #cdb898;
+		transform: translateY(-2px);
 	}
 
-	.action-kicker {
-		display: block;
-		color: #8a7d70;
-		font-size: 9px;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
+	.overview-card:focus-visible {
+		outline: 2px solid #9c8264;
+		outline-offset: 4px;
 	}
 
-	.action-card strong {
-		display: block;
-		margin-top: 12px;
-		font-size: 18px;
-		font-weight: 500;
-		color: #302c28;
+	.card-summary {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		flex: 1;
+		align-items: center;
+		gap: 18px;
+		margin: 24px 0 20px;
 	}
 
-	.action-card small {
+	.card-value {
+		color: #8b7055;
+		font-size: 52px;
+		font-weight: 400;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.05em;
+		line-height: 1;
+	}
+
+	.card-heading h2 {
+		margin-bottom: 6px;
+		font-size: 17px;
+	}
+
+	.card-heading > span {
 		display: block;
-		margin-top: 6px;
-		color: #665d55;
+		color: #81776e;
+		font-size: 12px;
+		line-height: 1.5;
+	}
+
+	.card-arrow {
+		position: absolute;
+		top: 14px;
+		right: 14px;
+		display: grid;
+		place-items: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: #faf7f1;
+		color: #8b7055;
+		font-size: 16px;
+	}
+
+	.card-detail {
+		align-self: flex-start;
+		padding: 6px 10px;
+		border-radius: 5px;
+		background: #faf7f1;
+		color: #766b5e;
 		font-size: 11px;
-		line-height: 1.4;
 	}
 
 	.section-heading {
 		display: flex;
 		align-items: end;
 		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 16px;
 		margin-bottom: 22px;
 	}
 	.section-heading .eyebrow {
@@ -261,10 +290,18 @@ export const ModeratorDashboard = styled(ModeratorDashboardContainer)`
 		min-height: 67px;
 		border-bottom: 1px solid #d8cec2;
 		font-size: 13px;
-	}
-	.table-row a {
 		color: #302c28;
 		text-decoration: none;
+	}
+	.order-row {
+		transition: background-color 0.2s ease;
+	}
+	.order-row:hover {
+		background: #faf7f1;
+	}
+	.order-row:focus-visible {
+		outline: 2px solid #9c8264;
+		outline-offset: -2px;
 	}
 	.table-head {
 		min-height: 42px;
@@ -295,6 +332,12 @@ export const ModeratorDashboard = styled(ModeratorDashboardContainer)`
 		color: #7a6f68;
 	}
 
+	@media (max-width: 1100px) {
+		.overview-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
 	@media (max-width: 800px) {
 		width: calc(100% - 40px);
 		padding-top: 40px;
@@ -303,12 +346,8 @@ export const ModeratorDashboard = styled(ModeratorDashboardContainer)`
 			flex-direction: column;
 			gap: 18px;
 		}
-		.stats {
-			grid-template-columns: repeat(2, 1fr);
-			margin-bottom: 54px;
-		}
-		.actions-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+		.overview-grid {
+			margin-bottom: 36px;
 		}
 		.orders-table {
 			overflow-x: auto;
@@ -319,23 +358,22 @@ export const ModeratorDashboard = styled(ModeratorDashboardContainer)`
 	}
 
 	@media (max-width: 480px) {
-		.actions-grid {
+		width: calc(100% - 32px);
+		.overview-grid {
 			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+		.overview-card {
+			padding: 18px 20px;
 		}
 	}
 
-	@media (max-width: 480px) {
-		width: calc(100% - 32px);
-		.stats {
-			gap: 8px;
+	@media (prefers-reduced-motion: reduce) {
+		.overview-card {
+			transition: none;
 		}
-		.stat-card {
-			min-height: 126px;
-			padding: 16px;
-		}
-		.stat-card strong {
-			margin-top: 20px;
-			font-size: 36px;
+		.overview-card:hover {
+			transform: none;
 		}
 	}
 `;

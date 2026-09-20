@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { mockCollections as collections } from '../../../data/mock-collections';
 import { PagesTitle } from '../../../components';
@@ -18,6 +19,7 @@ const CollectionCardContainer = ({ className, collection }) => {
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
 	const slideshowInterval = useRef(null);
 	const imageCount = collection.images.length;
+	const collectionUrl = `/jewelery?collection=${collection.id}`;
 
 	useEffect(() => {
 		return () => clearInterval(slideshowInterval.current);
@@ -43,25 +45,30 @@ const CollectionCardContainer = ({ className, collection }) => {
 			<CollectionImageWrapper
 				onMouseEnter={startSlideshow}
 				onMouseLeave={stopSlideshow}
-				$isInteractive={imageCount > 1}
 			>
-				<CollectionImageTrack
-					$activeImageIndex={activeImageIndex}
-					$imageCount={imageCount}
+				<CollectionLink
+					to={collectionUrl}
+					$image
+					aria-label={`Смотреть коллекцию «${collection.title}»`}
 				>
-					{collection.images.map((image, imageIndex) => (
-						<CollectionCover
-							key={`${image}-${imageIndex}`}
-							$imageCount={imageCount}
-							src={image}
-							alt={
-								imageIndex === 0
-									? collection.title
-									: `${collection.title}, фото ${imageIndex + 1}`
-							}
-						/>
-					))}
-				</CollectionImageTrack>
+					<CollectionImageTrack
+						$activeImageIndex={activeImageIndex}
+						$imageCount={imageCount}
+					>
+						{collection.images.map((image, imageIndex) => (
+							<CollectionCover
+								key={`${image}-${imageIndex}`}
+								$imageCount={imageCount}
+								src={image}
+								alt={
+									imageIndex === 0
+										? collection.title
+										: `${collection.title}, фото ${imageIndex + 1}`
+								}
+							/>
+						))}
+					</CollectionImageTrack>
+				</CollectionLink>
 				{imageCount > 1 && (
 					<CollectionIndicators
 						aria-label={`Фотографии коллекции «${collection.title}»`}
@@ -81,14 +88,31 @@ const CollectionCardContainer = ({ className, collection }) => {
 					</CollectionIndicators>
 				)}
 			</CollectionImageWrapper>
-			<CollectionTitle>{collection.title}</CollectionTitle>
-			<CollectionDescription>{collection.description}</CollectionDescription>
+			<CollectionLink to={collectionUrl}>
+				<CollectionTitle>{collection.title}</CollectionTitle>
+				<CollectionDescription>{collection.description}</CollectionDescription>
+			</CollectionLink>
 		</article>
 	);
 };
 
 const CollectionCard = styled(CollectionCardContainer)`
 	min-width: 0;
+`;
+
+const CollectionLink = styled(Link)`
+	display: block;
+	height: ${({ $image }) => ($image ? '100%' : 'auto')};
+	color: inherit;
+
+	&:focus-visible {
+		outline: 2px solid #9c8264;
+		outline-offset: ${({ $image }) => ($image ? '-3px' : '4px')};
+	}
+
+	&:hover h2 {
+		color: #9c8264;
+	}
 `;
 
 const CollectionImageTrack = styled.div`
@@ -106,7 +130,6 @@ const CollectionImageWrapper = styled.div`
 	aspect-ratio: 3 / 4;
 	overflow: hidden;
 	background: #f1ede7;
-	cursor: ${({ $isInteractive }) => ($isInteractive ? 'pointer' : 'default')};
 `;
 
 const CollectionCover = styled.img`

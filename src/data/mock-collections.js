@@ -18,6 +18,7 @@ export const mockCollections = [
 		images: getCollectionImages(collectionPearls, 1),
 		title: 'Жемчуг',
 		description: 'Украшения с мягким сиянием жемчуга',
+		status: 'published',
 	},
 	{
 		id: 2,
@@ -25,6 +26,7 @@ export const mockCollections = [
 		images: getCollectionImages(collectionMuse, 2),
 		title: 'Муза',
 		description: 'Выразительные украшения для особенных моментов',
+		status: 'published',
 	},
 	{
 		id: 3,
@@ -32,6 +34,7 @@ export const mockCollections = [
 		images: getCollectionImages(collectionMinimalism, 3),
 		title: 'Минимализм',
 		description: 'Лаконичные украшения на каждый день',
+		status: 'published',
 	},
 	{
 		id: 4,
@@ -39,5 +42,6 @@ export const mockCollections = [
 		images: getCollectionImages(collectionGarden, 4),
 		title: 'Сад',
 		description: 'Украшения, вдохновлённые красотой природы',
+		status: 'published',
 	},
 ];

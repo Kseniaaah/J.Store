@@ -1,5 +1,17 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { orderStatusLabels } from '../../../../data/mock-moderator-dashboard';
+
+const formatPrice = (value) => `${value.toLocaleString('ru-RU')} ₽`;
+const formatDate = (value) =>
+	new Intl.DateTimeFormat('ru-RU', {
+		dateStyle: 'long',
+		timeStyle: 'short',
+	}).format(new Date(value));
+const formatItems = (items) =>
+	items
+		.map(({ title, quantity }) => (quantity > 1 ? `${title} ×${quantity}` : title))
+		.join(' · ');
 
 const statusOptions = [
 	{ value: 'new', label: 'Новая' },
@@ -10,23 +22,19 @@ const statusOptions = [
 const ModeratorOrderContainer = ({ className, orders, setOrders }) => {
 	const navigate = useNavigate();
 	const { id } = useParams();
-	const order = orders.find((item) => item.id === `#${id}`);
+	const order = orders.find((item) => item.id === Number(id));
 
 	if (!order) return <main className={className}>Заказ не найден.</main>;
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
-		const statusTone = formData.get('status');
-		const status =
-			statusOptions.find((option) => option.value === statusTone)?.label ||
-			order.status;
+		const status = formData.get('status');
 		setOrders((currentOrders) =>
 			currentOrders.map((currentOrder) =>
 				currentOrder.id === order.id
 					? {
 							...currentOrder,
-							statusTone,
 							status,
 							comment: formData.get('comment')?.toString().trim(),
 							internalComment: formData
@@ -45,20 +53,22 @@ const ModeratorOrderContainer = ({ className, orders, setOrders }) => {
 			<div className="page-shell">
 				<header className="page-header">
 					<div>
-						<span className="eyebrow">J.Store · moderator</span>
-						<h1>Заказ {order.id}</h1>
-						<p>{order.date}</p>
+						<span className="eyebrow">your jeweler · moderator</span>
+						<h1>Заказ #{order.id}</h1>
+						<p>{formatDate(order.createdAt)}</p>
 					</div>
-					<span className={`status status--${order.statusTone}`}>
+					<span className={`status status--${order.status}`}>
 						<span />
-						{order.status}
+						{orderStatusLabels[order.status]}
 					</span>
 				</header>
 				<div className="order-layout">
 					<section className="summary-panel">
 						<div className="section-heading">
 							<span className="section-kicker">Сводка заказа</span>
-							<span className="summary-total">{order.total}</span>
+							<span className="summary-total">
+								{formatPrice(order.total)}
+							</span>
 						</div>
 						<div className="summary-list">
 							<div>
@@ -77,8 +87,8 @@ const ModeratorOrderContainer = ({ className, orders, setOrders }) => {
 						<div className="items-block">
 							<span className="section-kicker">Состав</span>
 							<div className="order-item">
-								<span>{order.items}</span>
-								<strong>{order.total}</strong>
+								<span>{formatItems(order.items)}</span>
+								<strong>{formatPrice(order.total)}</strong>
 							</div>
 						</div>
 					</section>
@@ -91,7 +101,7 @@ const ModeratorOrderContainer = ({ className, orders, setOrders }) => {
 						</div>
 						<label>
 							<span>Статус заказа</span>
-							<select name="status" defaultValue={order.statusTone}>
+							<select name="status" defaultValue={order.status}>
 								{statusOptions.map((option) => (
 									<option key={option.value} value={option.value}>
 										{option.label}

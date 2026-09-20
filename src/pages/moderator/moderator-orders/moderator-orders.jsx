@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import {
+	orderStatusLabels,
+	getOrdersUpdatedLabel,
+} from '../../../data/mock-moderator-dashboard';
+
+const formatPrice = (value) => `${value.toLocaleString('ru-RU')} ₽`;
+const formatItems = (items) =>
+	items
+		.map(({ title, quantity }) => (quantity > 1 ? `${title} ×${quantity}` : title))
+		.join(' · ');
 
 const filters = [
 	{ key: 'all', label: 'Все заказы' },
@@ -14,13 +24,13 @@ const ModeratorOrdersContainer = ({ className, orders }) => {
 	const visibleOrders =
 		activeFilter === 'all'
 			? orders
-			: orders.filter((order) => order.statusTone === activeFilter);
+			: orders.filter((order) => order.status === activeFilter);
 
 	return (
 		<main className={className}>
 			<header className="page-header">
 				<div>
-					<span className="eyebrow">J.Store · moderator</span>
+					<span className="eyebrow">your jeweler · moderator</span>
 					<h1>Заказы</h1>
 					<p>
 						Проверяйте новые заявки, состав заказов и текущий статус доставки.
@@ -46,13 +56,13 @@ const ModeratorOrdersContainer = ({ className, orders }) => {
 								{filter.key === 'all'
 									? orders.length
 									: orders.filter(
-											(order) => order.statusTone === filter.key,
+											(order) => order.status === filter.key,
 										).length}
 							</span>
 						</button>
 					))}
 				</div>
-				<span className="updated-label">Обновлено сегодня, 12:40</span>
+				<span className="updated-label">{getOrdersUpdatedLabel()}</span>
 			</section>
 
 			<section className="orders-table" role="table" aria-label="Список заказов">
@@ -64,21 +74,21 @@ const ModeratorOrdersContainer = ({ className, orders }) => {
 					<span>Статус</span>
 				</div>
 				{visibleOrders.map((order) => (
-					<article className="table-row" role="row" key={order.id}>
-						<Link
-							to={`/moderator/orders/${order.id.replace('#', '')}`}
-							className="order-id"
-						>
-							{order.id}
-						</Link>
+					<Link
+						key={order.id}
+						to={`/moderator/orders/${order.id}`}
+						className="table-row order-row"
+						role="row"
+					>
+						<span className="order-id">#{order.id}</span>
 						<span>{order.customer}</span>
-						<span className="muted">{order.items}</span>
-						<strong>{order.total}</strong>
-						<span className={`status status--${order.statusTone}`}>
+						<span className="muted">{formatItems(order.items)}</span>
+						<strong>{formatPrice(order.total)}</strong>
+						<span className={`status status--${order.status}`}>
 							<span />
-							{order.status}
+							{orderStatusLabels[order.status]}
 						</span>
-					</article>
+					</Link>
 				))}
 			</section>
 
@@ -190,6 +200,18 @@ export const ModeratorOrders = styled(ModeratorOrdersContainer)`
 		min-height: 74px;
 		border-bottom: 1px solid #d8cec2;
 		font-size: 13px;
+		color: inherit;
+		text-decoration: none;
+	}
+	.order-row {
+		transition: background-color 0.2s ease;
+	}
+	.order-row:hover {
+		background: #faf7f1;
+	}
+	.order-row:focus-visible {
+		outline: 2px solid #9c8264;
+		outline-offset: -2px;
 	}
 	.table-head {
 		min-height: 42px;

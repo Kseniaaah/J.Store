@@ -78,16 +78,16 @@ import weddingRingsTexture2Alt from '../components/icon/products/wedding/wedding
 export const categories = [
 	{ id: 'rings', title: 'Кольца' },
 	{ id: 'bracelets', title: 'Браслеты' },
-	{ id: 'pendants', title: 'Подвески' },
 	{ id: 'necklaces', title: 'Ожерелья' },
 	{ id: 'earrings', title: 'Серьги' },
 	{ id: 'wedding', title: 'Свадебные украшения' },
 ];
 
-export const mockProducts = [
+const productRecords = [
 	{
 		id: 1,
 		title: 'Кольцо с зелёным камнем',
+		material: 'Золото',
 		price: 12000,
 		category: 'rings',
 		collectionId: 4,
@@ -98,6 +98,7 @@ export const mockProducts = [
 	{
 		id: 2,
 		title: 'Золотое гладкое кольцо',
+		material: 'Золото',
 		price: 9800,
 		category: 'rings',
 		collectionId: 3,
@@ -108,6 +109,7 @@ export const mockProducts = [
 	{
 		id: 3,
 		title: 'Кольцо с зелёной вставкой',
+		material: 'Серебро',
 		price: 11500,
 		category: 'rings',
 		collectionId: 4,
@@ -119,6 +121,7 @@ export const mockProducts = [
 	{
 		id: 4,
 		title: 'Кольцо с жемчугом',
+		material: 'Серебро',
 		price: 13200,
 		category: 'rings',
 		collectionId: 2,
@@ -129,6 +132,7 @@ export const mockProducts = [
 	{
 		id: 5,
 		title: 'Красное кольцо',
+		material: 'Серебро',
 		price: 10900,
 		category: 'rings',
 		collectionId: null,
@@ -140,6 +144,7 @@ export const mockProducts = [
 	{
 		id: 6,
 		title: 'Кольцо в крапинку',
+		material: 'Серебро',
 		price: 8900,
 		category: 'rings',
 		collectionId: 3,
@@ -150,6 +155,7 @@ export const mockProducts = [
 	{
 		id: 7,
 		title: 'Волнистое кольцо',
+		material: 'Серебро',
 		price: 9200,
 		category: 'rings',
 		collectionId: 3,
@@ -160,6 +166,7 @@ export const mockProducts = [
 	{
 		id: 8,
 		title: 'Пустое кольцо',
+		material: 'Серебро',
 		price: 7600,
 		category: 'rings',
 		collectionId: 3,
@@ -170,6 +177,7 @@ export const mockProducts = [
 	{
 		id: 9,
 		title: 'Зелёно-золотое ожерелье',
+		material: 'Золото',
 		price: 18900,
 		category: 'necklaces',
 		collectionId: 4,
@@ -180,6 +188,7 @@ export const mockProducts = [
 	{
 		id: 10,
 		title: 'Синее ожерелье',
+		material: 'Серебро',
 		price: 16400,
 		category: 'necklaces',
 		collectionId: null,
@@ -191,6 +200,7 @@ export const mockProducts = [
 	{
 		id: 11,
 		title: 'Ожерелье-чокер',
+		material: 'Золото',
 		price: 12800,
 		category: 'necklaces',
 		collectionId: 1,
@@ -202,6 +212,7 @@ export const mockProducts = [
 	{
 		id: 12,
 		title: 'Золотое ожерелье с цветком',
+		material: 'Золото',
 		price: 17600,
 		category: 'necklaces',
 		collectionId: null,
@@ -213,6 +224,7 @@ export const mockProducts = [
 	{
 		id: 13,
 		title: 'Ожерелье-цветок',
+		material: 'Золото',
 		price: 15400,
 		category: 'necklaces',
 		collectionId: 3,
@@ -224,6 +236,7 @@ export const mockProducts = [
 	{
 		id: 14,
 		title: 'Ожерелье-гирлянда',
+		material: 'Серебро',
 		price: 19800,
 		category: 'necklaces',
 		collectionId: 3,
@@ -235,6 +248,7 @@ export const mockProducts = [
 	{
 		id: 15,
 		title: 'Мини-ожерелье',
+		material: 'Золото',
 		price: 9900,
 		category: 'necklaces',
 		collectionId: null,
@@ -245,6 +259,7 @@ export const mockProducts = [
 	{
 		id: 16,
 		title: 'Ожерелье с жемчужными шариками',
+		material: 'Золото',
 		price: 17200,
 		category: 'necklaces',
 		collectionId: 1,
@@ -255,6 +270,7 @@ export const mockProducts = [
 	{
 		id: 17,
 		title: 'Жемчужная коллекция',
+		material: 'Золото',
 		price: 21500,
 		category: 'necklaces',
 		collectionId: 1,
@@ -265,6 +281,7 @@ export const mockProducts = [
 	{
 		id: 18,
 		title: 'Жемчужное ожерелье',
+		material: 'Серебро',
 		price: 14800,
 		category: 'necklaces',
 		collectionId: 2,
@@ -276,6 +293,7 @@ export const mockProducts = [
 	{
 		id: 19,
 		title: 'Серебряное ожерелье',
+		material: 'Серебро',
 		price: 11400,
 		category: 'necklaces',
 		collectionId: 3,
@@ -287,6 +305,7 @@ export const mockProducts = [
 	{
 		id: 20,
 		title: 'Ожерелье с красным сердцем',
+		material: 'Серебро',
 		price: 13600,
 		category: 'necklaces',
 		collectionId: null,
@@ -297,36 +316,43 @@ export const mockProducts = [
 	{
 		id: 21,
 		title: 'Браслет-цветок',
+		material: 'Серебро',
 		price: 12600,
 		category: 'bracelets',
 		collectionId: null,
 		bestseller: true,
-		description: 'Изящный браслет с цветочным мотивом и лёгким праздничным настроением.',
+		description:
+			'Изящный браслет с цветочным мотивом и лёгким праздничным настроением.',
 		images: [braceletFlower1, braceletFlower2],
 	},
 	{
 		id: 22,
 		title: 'Зелёный браслет',
+		material: 'Золото',
 		price: 13900,
 		category: 'bracelets',
 		collectionId: 4,
 		bestseller: false,
-		description: 'Акцентный браслет с зелёными деталями для выразительных повседневных образов.',
+		description:
+			'Акцентный браслет с зелёными деталями для выразительных повседневных образов.',
 		images: [braceletGreen1, braceletGreen2],
 	},
 	{
 		id: 23,
 		title: 'Мини-браслет',
+		material: 'Серебро',
 		price: 8700,
 		category: 'bracelets',
 		collectionId: null,
 		bestseller: false,
-		description: 'Тонкий минималистичный браслет, который легко сочетать с другими украшениями.',
+		description:
+			'Тонкий минималистичный браслет, который легко сочетать с другими украшениями.',
 		images: [braceletMini1, braceletMini2],
 	},
 	{
 		id: 24,
 		title: 'Жемчужный браслет',
+		material: 'Золото',
 		price: 15100,
 		category: 'bracelets',
 		collectionId: 1,
@@ -337,6 +363,7 @@ export const mockProducts = [
 	{
 		id: 25,
 		title: 'Серьги с бусинами',
+		material: 'Золото',
 		price: 9400,
 		category: 'earrings',
 		collectionId: 1,
@@ -347,6 +374,7 @@ export const mockProducts = [
 	{
 		id: 26,
 		title: 'Серьги-цветы',
+		material: 'Серебро',
 		price: 11800,
 		category: 'earrings',
 		collectionId: null,
@@ -357,6 +385,7 @@ export const mockProducts = [
 	{
 		id: 27,
 		title: 'Винтажные серьги',
+		material: 'Золото',
 		price: 12700,
 		category: 'earrings',
 		collectionId: 2,
@@ -367,6 +396,7 @@ export const mockProducts = [
 	{
 		id: 28,
 		title: 'Серьги-сердца',
+		material: 'Золото',
 		price: 10200,
 		category: 'earrings',
 		collectionId: 3,
@@ -377,16 +407,19 @@ export const mockProducts = [
 	{
 		id: 29,
 		title: 'Серьги-медальоны',
+		material: 'Золото',
 		price: 11100,
 		category: 'earrings',
 		collectionId: null,
 		bestseller: false,
-		description: 'Лаконичные серьги-медальоны с мягким сиянием и универсальным дизайном.',
+		description:
+			'Лаконичные серьги-медальоны с мягким сиянием и универсальным дизайном.',
 		images: [earingsMedal1, earingsMedal2],
 	},
 	{
 		id: 30,
 		title: 'Жемчужные серьги',
+		material: 'Золото',
 		price: 15900,
 		category: 'earrings',
 		collectionId: 1,
@@ -397,6 +430,7 @@ export const mockProducts = [
 	{
 		id: 31,
 		title: 'Круглое помолвочное кольцо',
+		material: 'Золото',
 		price: 28500,
 		category: 'wedding',
 		collectionId: null,
@@ -407,6 +441,7 @@ export const mockProducts = [
 	{
 		id: 32,
 		title: 'Овальное помолвочное кольцо',
+		material: 'Золото',
 		price: 29800,
 		category: 'wedding',
 		collectionId: null,
@@ -417,6 +452,7 @@ export const mockProducts = [
 	{
 		id: 33,
 		title: 'Золотое квадратное кольцо',
+		material: 'Золото',
 		price: 27600,
 		category: 'wedding',
 		collectionId: null,
@@ -427,6 +463,7 @@ export const mockProducts = [
 	{
 		id: 34,
 		title: 'Удлинённое помолвочное кольцо',
+		material: 'Золото',
 		price: 28900,
 		category: 'wedding',
 		collectionId: null,
@@ -437,16 +474,19 @@ export const mockProducts = [
 	{
 		id: 35,
 		title: 'Серебряное квадратное кольцо',
+		material: 'Серебро',
 		price: 22400,
 		category: 'wedding',
 		collectionId: null,
 		bestseller: false,
-		description: 'Сдержанное серебряное кольцо с чистой геометрией и светлым блеском.',
+		description:
+			'Сдержанное серебряное кольцо с чистой геометрией и светлым блеском.',
 		images: [engagementRingSquareSilver1, engagementRingSquareSilver2],
 	},
 	{
 		id: 36,
 		title: 'Гладкое золотое свадебное кольцо',
+		material: 'Золото',
 		price: 19800,
 		category: 'wedding',
 		collectionId: null,
@@ -457,6 +497,7 @@ export const mockProducts = [
 	{
 		id: 37,
 		title: 'Гладкое серебряное свадебное кольцо',
+		material: 'Серебро',
 		price: 17600,
 		category: 'wedding',
 		collectionId: null,
@@ -467,11 +508,24 @@ export const mockProducts = [
 	{
 		id: 38,
 		title: 'Фактурное свадебное кольцо',
+		material: 'Серебро',
 		price: 21200,
 		category: 'wedding',
 		collectionId: null,
 		bestseller: false,
-		description: 'Свадебное кольцо с выразительной фактурой и мягким сиянием металла.',
+		description:
+			'Свадебное кольцо с выразительной фактурой и мягким сиянием металла.',
 		images: [weddingRingsTexture2Alt, weddingRingsTexture2],
 	},
 ];
+
+export const mockProducts = productRecords.map((product) => ({
+	...product,
+	material: product.material ?? (product.id % 2 === 0 ? 'Золото' : 'Серебро'),
+	sizes:
+		product.category === 'rings' || product.category === 'wedding'
+			? ['15', '16', '17', '18', '19']
+			: null,
+	stock: product.stock ?? 1,
+	isFeatured: product.bestseller,
+}));

@@ -18,7 +18,7 @@ const ModeratorCollectionsContainer = ({ className, collections }) => {
 		<main className={className}>
 			<header className="page-header">
 				<div>
-					<span className="eyebrow">J.Store · moderator</span>
+					<span className="eyebrow">your jeweler · moderator</span>
 					<h1>Коллекции</h1>
 					<p>
 						Тематические подборки украшений и их обложки в каталоге магазина.

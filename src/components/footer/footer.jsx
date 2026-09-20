@@ -18,34 +18,19 @@ const FooterContainer = ({ className }) => (
 			<a href="mailto:your.jeweler@mail.ru">your.jeweler@mail.ru</a>
 
 			<div className="footer__socials">
-				<a
-					aria-label="Телеграм"
-					href="https://t.me/your_jeweler"
-					target="_blank"
-					rel="noreferrer"
-				>
+				<button type="button" aria-label="Телеграм">
 					<StyledIcon src={tgIcon} alt="" />
-				</a>
-				<a
-					aria-label="Instagram"
-					href="https://www.instagram.com/your_jeweler/"
-					target="_blank"
-					rel="noreferrer"
-				>
+				</button>
+				<button type="button" aria-label="Instagram">
 					<StyledIcon src={instIcon} alt="" />
-				</a>
-				<a
-					aria-label="ВКонтакте"
-					href="https://vk.com/your_jeweler"
-					target="_blank"
-					rel="noreferrer"
-				>
+				</button>
+				<button type="button" aria-label="ВКонтакте">
 					<StyledIcon src={vkIcon} alt="" />
-				</a>
+				</button>
 			</div>
 		</div>
 		<div className="footer__divider" />
-		<p>©2025 «Your Jeweler»</p>
+		<p>©2025 «your jeweler»</p>
 	</footer>
 );
 
@@ -88,15 +73,18 @@ export const Footer = styled(FooterContainer)`
 		margin-top: 6px;
 	}
 
-	.footer__socials a {
+	.footer__socials button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		width: 36px;
 		height: 36px;
+		padding: 0;
 		border: 1px solid #ded2c3;
 		border-radius: 50%;
 		background: rgba(255, 253, 249, 0.55);
+		cursor: default;
+		font: inherit;
 		transition:
 			border-color 160ms ease,
 			background 160ms ease,
@@ -105,7 +93,6 @@ export const Footer = styled(FooterContainer)`
 		&:hover {
 			border-color: #b89b72;
 			background: #fffdf9;
-			transform: translateY(-2px);
 		}
 	}
 

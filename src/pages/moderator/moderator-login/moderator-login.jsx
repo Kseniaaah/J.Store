@@ -1,29 +1,78 @@
+import { useState } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import {
+	authenticateModerator,
+	isModeratorAuthenticated,
+} from '../../../utils/moderator-auth';
 
-const ModeratorLoginContainer = ({ className }) => (
-	<main className={className}>
-		<div className="login-card">
-			<div className="login-header">
-				<span className="eyebrow">J.Store · moderator</span>
-				<h1>Вход в панель</h1>
+const ModeratorLoginContainer = ({ className }) => {
+	const navigate = useNavigate();
+	const location = useLocation();
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [hasError, setHasError] = useState(false);
+	const from =
+		new URLSearchParams(location.search).get('from') || '/moderator/dashboard';
+
+	if (isModeratorAuthenticated()) return <Navigate to={from} replace />;
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		if (!authenticateModerator(email.trim(), password)) {
+			setHasError(true);
+			return;
+		}
+
+		navigate(from, { replace: true });
+	};
+
+	return (
+		<main className={className}>
+			<div className="login-card">
+				<div className="login-header">
+					<span className="eyebrow">your jeweler · moderator</span>
+					<h1>Вход в панель</h1>
+				</div>
+
+				<form className="login-form" onSubmit={handleSubmit}>
+					<label>
+						<span>Email</span>
+						<input
+							type="email"
+							value={email}
+							onChange={(event) => {
+								setEmail(event.target.value);
+								setHasError(false);
+							}}
+							placeholder="manager@jstore.ru"
+							required
+						/>
+					</label>
+
+					<label>
+						<span>Пароль</span>
+						<input
+							type="password"
+							value={password}
+							onChange={(event) => {
+								setPassword(event.target.value);
+								setHasError(false);
+							}}
+							placeholder="••••••••"
+							required
+						/>
+					</label>
+
+					{hasError && (
+						<p className="error-message">Неверный email или пароль.</p>
+					)}
+					<button type="submit">Войти</button>
+				</form>
 			</div>
-
-			<form className="login-form">
-				<label>
-					<span>Email</span>
-					<input type="email" placeholder="manager@jstore.ru" />
-				</label>
-
-				<label>
-					<span>Пароль</span>
-					<input type="password" placeholder="••••••••" />
-				</label>
-
-				<button type="submit">Войти</button>
-			</form>
-		</div>
-	</main>
-);
+		</main>
+	);
+};
 
 export const ModeratorLogin = styled(ModeratorLoginContainer)`
 	min-height: 70vh;
@@ -86,7 +135,9 @@ export const ModeratorLogin = styled(ModeratorLoginContainer)`
 		color: #302c28;
 		font: inherit;
 		outline: none;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	input:focus {
@@ -108,6 +159,12 @@ export const ModeratorLogin = styled(ModeratorLoginContainer)`
 
 	button:hover {
 		opacity: 0.96;
+	}
+
+	.error-message {
+		margin: -8px 0 0;
+		color: #a34d43;
+		font-size: 12px;
 	}
 
 	@media (max-width: 480px) {

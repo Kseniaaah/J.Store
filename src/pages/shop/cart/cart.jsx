@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { mockProducts as products } from '../../../data/mock-products';
+import { ProductLink } from '../../../components/product-link/product-link';
 import { PagesTitle } from '../../../components';
 import { getStoredValue, setStoredValue } from '../../../utils/local-storage';
 
@@ -10,7 +10,7 @@ const getCartProductIds = () => {
 	return Array.isArray(value) ? value : [];
 };
 
-const CartContainer = ({ className }) => {
+const CartContainer = ({ className, products }) => {
 	const [cartProductIds, setCartProductIds] = useState(getCartProductIds);
 	const [isRequestOpen, setIsRequestOpen] = useState(false);
 	const [isRequestSent, setIsRequestSent] = useState(false);
@@ -51,12 +51,18 @@ const CartContainer = ({ className }) => {
 					<CartList aria-label="Товары в корзине">
 						{cartProducts.map((product) => (
 							<CartItem key={product.id}>
-								<ProductImage
-									src={product.images[0]}
-									alt={product.title}
-								/>
+								<ProductLink to={`/products/${product.id}`} $image>
+									<ProductImage
+										src={product.images[0]}
+										alt={product.title}
+									/>
+								</ProductLink>
 								<ProductInfo>
-									<ProductTitle>{product.title}</ProductTitle>
+									<ProductTitle>
+										<ProductLink to={`/products/${product.id}`}>
+											{product.title}
+										</ProductLink>
+									</ProductTitle>
 									<ProductMeta>Украшение · в наличии</ProductMeta>
 								</ProductInfo>
 								<ItemPrice>

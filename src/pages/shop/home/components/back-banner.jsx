@@ -2,11 +2,16 @@ import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 import { mockBackBanners } from '../../../../data/mock-banners';
 
+const getBannerUrl = (target) =>
+	target?.type === 'collection'
+		? `/jewelery?collection=${target.id}`
+		: `/jewelery?category=${target?.id || 'all'}`;
+
 const BackBannerContainer = ({ className }) => {
 	return (
 		<section className={className}>
-			{mockBackBanners.map(({ id, title, alt, image }) => (
-				<NavLink className="category-card" to="/jewelery" key={id}>
+			{mockBackBanners.map(({ id, title, alt, image, target }) => (
+				<NavLink className="category-card" to={getBannerUrl(target)} key={id}>
 					<img src={image} alt={alt} />
 					<h2>{title}</h2>
 				</NavLink>
